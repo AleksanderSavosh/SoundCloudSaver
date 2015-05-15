@@ -1,0 +1,21 @@
+sample List 
+http://api.soundcloud.com/tracks.json?client_id=b45b1aa10f1ac2941910a7f0d10f8e28&q=test
+
+sample Stream
+https://api.soundcloud.com/tracks/159723640/stream?client_id=b45b1aa10f1ac2941910a7f0d10f8e28
+
+
+Требования:
+- дизайн как на design_sample.png
+- в поля для ввода текста справа должен появляться крестик которые очищает поле если там есть текст
+- когда идет обращение в интернет отображать циклический progressbar
+- для вкладок использовать FragmentTabHost
+- Fragment из support-v4
+- для web запросов использовать - https://github.com/turbomanage/basic-http-client
+- если нет интернета отображать диалог с кнопкой "OK" и соотв. текстом.
+- если запрос завершился неудачей отображать диалог с кнопкой "OK" и соотв. текстом.
+
+Дополнительные требования
+- при переключении между вкладками список не должен очищаться и менять позицию
+- менять ориентацию экрана можно, при этом список не должен очищаться и менять позицию
+- изучить метод FragmentTabHost.onTabChanged() и doTabChanged() 
