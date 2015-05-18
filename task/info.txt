@@ -19,3 +19,7 @@ https://api.soundcloud.com/tracks/159723640/stream?client_id=b45b1aa10f1ac294191
 - при переключении между вкладками список не должен очищаться и менять позицию
 - менять ориентацию экрана можно, при этом список не должен очищаться и менять позицию
 - изучить метод FragmentTabHost.onTabChanged() и doTabChanged() 
+
+
+url.ca/mgswv
+goo.gl/dMMEFu

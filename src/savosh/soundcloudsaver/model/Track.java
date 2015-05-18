@@ -7,6 +7,7 @@ public class Track {
     Integer likesCount;
     Long duration;
     String artworkUrl;
+    String streamUrl;
 
     public String getTitle() {
         return title;
@@ -38,5 +39,24 @@ public class Track {
 
     public void setArtworkUrl(String artworkUrl) {
         this.artworkUrl = artworkUrl;
+    }
+
+    public String getStreamUrl() {
+        return streamUrl;
+    }
+
+    public void setStreamUrl(String streamUrl) {
+        this.streamUrl = streamUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Track{" +
+                "title='" + title + '\'' +
+                ", likesCount=" + likesCount +
+                ", duration=" + duration +
+                ", artworkUrl='" + artworkUrl + '\'' +
+                ", streamUrl='" + streamUrl + '\'' +
+                '}';
     }
 }
