@@ -11,7 +11,7 @@ public class ListTrackJsonDeserializer implements JsonDeserializer<List<Track>> 
     @Override
     public List<Track> deserialize(JsonElement jsonElement, Type type,
                              JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        ArrayList<Track> tracks = new ArrayList<>();
+        ArrayList<Track> tracks = new ArrayList<Track>();
         if(jsonElement.isJsonArray()) {
             JsonArray jsonArray = jsonElement.getAsJsonArray();
             for(JsonElement element : jsonArray){

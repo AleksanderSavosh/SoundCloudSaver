@@ -1,6 +1,5 @@
 package savosh.soundcloudsaver.model;
 
-
 public class Track {
 
     String title;
