@@ -1,10 +1,12 @@
 package savosh.soundcloudsaver.service;
 
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.turbomanage.httpclient.BasicHttpClient;
 import com.turbomanage.httpclient.HttpResponse;
 import com.turbomanage.httpclient.ParameterMap;
 import savosh.soundcloudsaver.model.Track;
+import savosh.soundcloudsaver.trans.ListTrackJsonDeserializer;
 
 import java.util.List;
 
@@ -21,11 +23,13 @@ public class TrackService {
     }
 
     public List<Track> find(String text){
-        return null;
+        String response = doGet(text);
+        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListTrackJsonDeserializer()).create();
+        return gson.fromJson(response, List.class);
     }
 
     public static void main(String[] args) {
-        System.out.println(new TrackService().doGet("test"));
+        System.out.println(new TrackService().find("test"));
     }
 
 
