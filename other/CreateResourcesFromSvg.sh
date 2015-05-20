@@ -41,7 +41,7 @@ mkdir -p ../res/drawable ../res/drawable-ldpi ../res/drawable-mdpi ../res/drawab
 for f in svg/*.svg; do
     filename=`basename $f .svg`.png
     echo "Converting $f to $filename"
-    convert -density 300 -background transparent $f -resize ${hdpisize} -gravity center -extent ${hdpisize} ../res/drawable/"$filename"
+    convert -density 240 -background transparent $f -resize ${hdpisize} -gravity center -extent ${hdpisize} ../res/drawable/"$filename"
 
     convert -density 120 -background transparent $f -resize ${ldpisize} -gravity center -extent ${ldpisize} ../res/drawable-ldpi/"$filename"
     convert -density 160 -background transparent $f -resize ${mdpisize} -gravity center -extent ${mdpisize} ../res/drawable-mdpi/"$filename"
