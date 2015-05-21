@@ -8,7 +8,8 @@
 #xxxhdpi 640dpi 16    170
 
 #size for hdpi, number must div on 6
-basesize=72
+files="svg/*.svg"
+basesize=54
 let koefsize=$basesize/6
 
 let ldpisize=$koefsize*3
@@ -35,7 +36,7 @@ let xxxhdpisize=$koefsize*16
 xxxhdpisize="${xxxhdpisize}x${xxxhdpisize}"
 echo "xxxhdpi size $xxxhdpisize"
 
-rm -rf ../res/drawable ../res/drawable-ldpi ../res/drawable-mdpi ../res/drawable-hdpi ../res/drawable-xhdpi ../res/drawable-xxhdpi ../res/drawable-xxxhdpi
+#rm -rf ../res/drawable ../res/drawable-ldpi ../res/drawable-mdpi ../res/drawable-hdpi ../res/drawable-xhdpi ../res/drawable-xxhdpi ../res/drawable-xxxhdpi
 mkdir -p ../res/drawable ../res/drawable-ldpi ../res/drawable-mdpi ../res/drawable-hdpi ../res/drawable-xhdpi ../res/drawable-xxhdpi ../res/drawable-xxxhdpi
 
 for f in svg/*.svg; do
