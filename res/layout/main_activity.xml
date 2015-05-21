@@ -3,33 +3,32 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-    <RelativeLayout android:layout_width="match_parent"
-                  android:layout_height="match_parent">
-
+        android:layout_height="match_parent">
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F1F1F1">
         <RelativeLayout
                 android:id="@+id/main_activity_toolbar"
                 android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/main_toolbar">
+                android:layout_height="wrap_content"
+                android:background="@color/main_toolbar">
             <ImageView
                     android:id="@+id/main_activity_music_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:layout_margin="8dp"
-                    android:src="@drawable/music"/>
+                    android:padding="12dp"
+                    android:src="@drawable/note"/>
             <ImageView
                     android:id="@+id/main_activity_menu_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_margin="8dp"
-                    android:src="@drawable/menu"/>
-
+                    android:padding="12dp"
+                    android:src="@drawable/more"/>
             <TabWidget
                     android:id="@android:id/tabs"
                     android:layout_width="match_parent"
@@ -37,15 +36,12 @@
                     android:layout_toRightOf="@id/main_activity_music_image"
                     android:layout_toLeftOf="@id/main_activity_menu_image"
                     android:layout_gravity="bottom"/>
-
-
         </RelativeLayout>
         <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/main_activity_toolbar">
-
         </FrameLayout>
     </RelativeLayout>
 </android.support.v4.app.FragmentTabHost>

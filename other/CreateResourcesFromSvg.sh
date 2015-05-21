@@ -7,9 +7,11 @@
 #xxhdpi  480dpi 12    128
 #xxxhdpi 640dpi 16    170
 
+#for launcher icon basesize = 72
+
 #size for hdpi, number must div on 6
 files="svg/*.svg"
-basesize=54
+basesize=36
 let koefsize=$basesize/6
 
 let ldpisize=$koefsize*3

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="main_toolbar">#4A545C</color>
+    <dimen name="default_padding">8dp</dimen>
 </resources>

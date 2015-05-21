@@ -16,6 +16,7 @@ public class TrackService {
         BasicHttpClient basicHttpClient = new BasicHttpClient("http://api.soundcloud.com");
         ParameterMap parameterMap = basicHttpClient.newParams()
                 .add("q", text)
+                .add("limit", "5")
                 .add("client_id", "b45b1aa10f1ac2941910a7f0d10f8e28");
         basicHttpClient.setConnectionTimeout(2000);
         HttpResponse httpResponse = basicHttpClient.get("/tracks.json", parameterMap);
