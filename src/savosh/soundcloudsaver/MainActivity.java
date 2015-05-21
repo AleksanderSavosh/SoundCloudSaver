@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends FragmentActivity {
     private FragmentTabHost mTabHost;
@@ -15,6 +16,8 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        Picasso.with(this).setIndicatorsEnabled(true);
 
         mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
