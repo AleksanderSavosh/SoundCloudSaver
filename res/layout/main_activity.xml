@@ -12,7 +12,7 @@
                 android:id="@+id/main_activity_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/main_toolbar">
+                android:background="@color/main_toolbar_background">
             <ImageView
                     android:id="@+id/main_activity_music_image"
                     android:layout_width="wrap_content"
