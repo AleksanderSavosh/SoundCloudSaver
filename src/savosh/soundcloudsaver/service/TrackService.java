@@ -1,5 +1,9 @@
 package savosh.soundcloudsaver.service;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.turbomanage.httpclient.BasicHttpClient;
@@ -9,14 +13,24 @@ import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.trans.ListTrackJsonDeserializer;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TrackService {
+
+    Cache<String, List<Track>> cache = CacheBuilder.newBuilder().maximumSize(100).build();
+
+    private TrackService(){}
+
+    private static final TrackService TRACK_SERVICE = new TrackService();
+    public static TrackService service(){
+        return TRACK_SERVICE;
+    }
 
     private String doGet(String text){
         BasicHttpClient basicHttpClient = new BasicHttpClient("http://api.soundcloud.com");
         ParameterMap parameterMap = basicHttpClient.newParams()
                 .add("q", text)
-                .add("limit", "5")
+//                .add("limit", "5")
                 .add("client_id", "b45b1aa10f1ac2941910a7f0d10f8e28");
         basicHttpClient.setConnectionTimeout(2000);
         HttpResponse httpResponse = basicHttpClient.get("/tracks.json", parameterMap);
@@ -24,9 +38,14 @@ public class TrackService {
     }
 
     public List<Track> find(String text){
-        String response = doGet(text);
-        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListTrackJsonDeserializer()).create();
-        return gson.fromJson(response, List.class);
+        List<Track> tracks = cache.getIfPresent(text);
+        if(tracks == null) {
+            String response = doGet(text);
+            Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListTrackJsonDeserializer()).create();
+            tracks = gson.fromJson(response, List.class);
+            cache.put(text, tracks);
+        }
+        return tracks;
     }
 
     public static void main(String[] args) {

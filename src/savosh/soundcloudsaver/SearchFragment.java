@@ -1,6 +1,7 @@
 package savosh.soundcloudsaver;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -48,7 +49,7 @@ public class SearchFragment extends Fragment {
 
                             @Override
                             protected List<Track> doInBackground(Void... params) {
-                                return new TrackService().find(searchText);
+                                return TrackService.service().find(searchText);
                             }
 
                             @Override
