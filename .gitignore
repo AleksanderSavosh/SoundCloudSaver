@@ -3,4 +3,7 @@ gen*
 *.iml
 project.properties
 assets
+build
+proguard-rules.pro
+
 
