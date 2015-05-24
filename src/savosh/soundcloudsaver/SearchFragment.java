@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -32,8 +33,8 @@ public class SearchFragment extends Fragment {
         showKeyboard(editText);
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(final View v, int keyCode, KeyEvent event) {
-                if (keyCode == 66){
-                    if(event.getAction() == KeyEvent.ACTION_UP) {
+                if (keyCode == 66) {
+                    if (event.getAction() == KeyEvent.ACTION_UP) {
                         new AsyncTask<Void, Void, List<Track>>() {
                             String searchText;
 
@@ -55,10 +56,14 @@ public class SearchFragment extends Fragment {
                             @Override
                             protected void onPostExecute(List<Track> list) {
                                 Log.i(getClass().getName(), "Tracks: " + list);
-                                Toast.makeText(getActivity(), "Search text: " + list, Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(getActivity(), "Search text: " + list, Toast.LENGTH_SHORT).show();
                                 progressBar.setVisibility(View.GONE);
-                                adapter.addAll(list);
-                                adapter.notifyDataSetChanged();
+                                if (list != null) {
+                                    adapter.addAll(list);
+                                    adapter.notifyDataSetChanged();
+                                } else {
+                                    Toast.makeText(getActivity(), "No result", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }.execute();
                     }
@@ -67,6 +72,16 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
+
+
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Track track = adapter.getItem(position);
+//                Toast.makeText(getActivity(), "CLick on " + track.getTitle(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
         return v;
     }
 

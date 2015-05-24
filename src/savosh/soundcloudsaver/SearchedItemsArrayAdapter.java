@@ -3,6 +3,7 @@ package savosh.soundcloudsaver;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import savosh.soundcloudsaver.model.Track;
 
@@ -18,12 +20,16 @@ import java.io.IOException;
 public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
 
     private static class Player {
-        private Player(){}
-        private static Player player = new Player();
-        public Player get(){
+        private Context context;
+        private Player(Context context){
+            this.context = context;
+        }
+        private static Player player;
+        public static Player with(Context context){
             if(player == null){
-                player = new Player();
+                player = new Player(context);
             }
+            player.context = context;
             return player;
         }
 
@@ -42,10 +48,14 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
             releaseMP();
             if(mediaPlayer == null){
                 try {
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setDataSource(currUrlStream);
-                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    mediaPlayer.prepareAsync();
+                    Log.i(getClass().getName(),"Stream url: " + currUrlStream);
+                    Uri uri = Uri.parse(currUrlStream);
+                    Log.i(getClass().getName(),"Stream uri: " + uri);
+//                    mediaPlayer = new MediaPlayer();
+//                    mediaPlayer.setDataSource(currUrlStream);
+                    mediaPlayer = MediaPlayer.create(context, uri);
+//                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//                    mediaPlayer.prepareAsync();
                     mediaPlayer.start();
                 } catch(Exception e){
                     Log.e(getClass().getName(), "Error in block start play track: " + e.getMessage(), e);
@@ -119,12 +129,8 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
             viewHolder.time = (TextView) row.findViewById(R.id.main_search_fragment_list_item_time);
 
             viewHolder.play = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_play);
-            viewHolder.pause = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_play);
+            viewHolder.pause = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_pause);
             viewHolder.stop = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_stop);
-
-            viewHolder.play.setClickable(true);
-            viewHolder.pause.setClickable(true);
-            viewHolder.stop.setClickable(true);
 
             row.setTag(viewHolder);
         }
@@ -155,10 +161,11 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
             viewHolder.time.setText("No track duration");
         }
 
+
         viewHolder.play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Player.player.start(track.getStreamUrl());
+                Player.with(getContext()).start(track.getStreamUrl() + "?client_id=b45b1aa10f1ac2941910a7f0d10f8e28");
             }
         });
 

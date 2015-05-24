@@ -1,9 +1,8 @@
 package savosh.soundcloudsaver.service;
 
+import android.util.Log;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.turbomanage.httpclient.BasicHttpClient;
@@ -27,20 +26,28 @@ public class TrackService {
     }
 
     private String doGet(String text){
-        BasicHttpClient basicHttpClient = new BasicHttpClient("http://api.soundcloud.com");
-        ParameterMap parameterMap = basicHttpClient.newParams()
-                .add("q", text)
-//                .add("limit", "5")
-                .add("client_id", "b45b1aa10f1ac2941910a7f0d10f8e28");
-        basicHttpClient.setConnectionTimeout(2000);
-        HttpResponse httpResponse = basicHttpClient.get("/tracks.json", parameterMap);
-        return httpResponse.getBodyAsString();
+        try {
+            BasicHttpClient basicHttpClient = new BasicHttpClient("http://api.soundcloud.com");
+            ParameterMap parameterMap = basicHttpClient.newParams()
+                    .add("q", text)
+    //                .add("limit", "5")
+                    .add("client_id", "b45b1aa10f1ac2941910a7f0d10f8e28");
+            basicHttpClient.setConnectionTimeout(2000);
+            HttpResponse httpResponse = basicHttpClient.get("/tracks.json", parameterMap);
+            return httpResponse.getBodyAsString();
+        } catch(Exception e){
+            Log.e(getClass().getName(), "Error in do get request block code: " + e.getMessage(), e);
+            return null;
+        }
     }
 
     public List<Track> find(String text){
         List<Track> tracks = cache.getIfPresent(text);
         if(tracks == null) {
             String response = doGet(text);
+            if(response == null){
+                return tracks;
+            }
             Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListTrackJsonDeserializer()).create();
             tracks = gson.fromJson(response, List.class);
             cache.put(text, tracks);
