@@ -19,84 +19,7 @@ import java.io.IOException;
 
 public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
 
-    private static class Player {
-        private Context context;
-        private Player(Context context){
-            this.context = context;
-        }
-        private static Player player;
-        public static Player with(Context context){
-            if(player == null){
-                player = new Player(context);
-            }
-            player.context = context;
-            return player;
-        }
 
-        MediaPlayer mediaPlayer = null;
-        String currUrlStream = "";
-        public Player start(String urlStream){
-            if(currUrlStream.equalsIgnoreCase(urlStream)){
-                if (!mediaPlayer.isPlaying()) {
-                    mediaPlayer.start();
-                }
-                return this;
-            }
-
-            currUrlStream = urlStream;
-
-            releaseMP();
-            if(mediaPlayer == null){
-                try {
-                    Log.i(getClass().getName(),"Stream url: " + currUrlStream);
-                    Uri uri = Uri.parse(currUrlStream);
-                    Log.i(getClass().getName(),"Stream uri: " + uri);
-//                    mediaPlayer = new MediaPlayer();
-//                    mediaPlayer.setDataSource(currUrlStream);
-                    mediaPlayer = MediaPlayer.create(context, uri);
-//                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//                    mediaPlayer.prepareAsync();
-                    mediaPlayer.start();
-                } catch(Exception e){
-                    Log.e(getClass().getName(), "Error in block start play track: " + e.getMessage(), e);
-                }
-            }
-            return this;
-        }
-
-        public Player pause(){
-            if(mediaPlayer != null) {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                }
-            }
-            return this;
-        }
-
-        public Player stop(){
-            if(mediaPlayer != null) {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.stop();
-                }
-            }
-            return this;
-        }
-
-        public void destroy(){
-            releaseMP();
-        }
-
-        private void releaseMP() {
-            if (mediaPlayer != null) {
-                try {
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
 
     public SearchedItemsArrayAdapter(Context context) {
@@ -108,9 +31,6 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
         TextView title;
         TextView likesNumber;
         TextView time;
-        ImageView play;
-        ImageView pause;
-        ImageView stop;
     }
 
     @Override
@@ -127,10 +47,6 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
             viewHolder.title = (TextView) row.findViewById(R.id.main_search_fragment_list_item_title);
             viewHolder.likesNumber = (TextView) row.findViewById(R.id.main_search_fragment_list_item_likes_number);
             viewHolder.time = (TextView) row.findViewById(R.id.main_search_fragment_list_item_time);
-
-            viewHolder.play = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_play);
-            viewHolder.pause = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_pause);
-            viewHolder.stop = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_stop);
 
             row.setTag(viewHolder);
         }
@@ -160,29 +76,6 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
         } else {
             viewHolder.time.setText("No track duration");
         }
-
-
-        viewHolder.play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Player.with(getContext()).start(track.getStreamUrl() + "?client_id=b45b1aa10f1ac2941910a7f0d10f8e28");
-            }
-        });
-
-        viewHolder.pause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Player.player.pause();
-            }
-        });
-
-        viewHolder.stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Player.player.stop();
-            }
-        });
-
         return row;
     }
 

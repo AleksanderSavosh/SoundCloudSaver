@@ -49,6 +49,32 @@ public class Track {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Track track = (Track) o;
+
+        if (artworkUrl != null ? !artworkUrl.equals(track.artworkUrl) : track.artworkUrl != null) return false;
+        if (duration != null ? !duration.equals(track.duration) : track.duration != null) return false;
+        if (likesCount != null ? !likesCount.equals(track.likesCount) : track.likesCount != null) return false;
+        if (streamUrl != null ? !streamUrl.equals(track.streamUrl) : track.streamUrl != null) return false;
+        if (title != null ? !title.equals(track.title) : track.title != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title != null ? title.hashCode() : 0;
+        result = 31 * result + (likesCount != null ? likesCount.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
+        result = 31 * result + (artworkUrl != null ? artworkUrl.hashCode() : 0);
+        result = 31 * result + (streamUrl != null ? streamUrl.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Track{" +
                 "title='" + title + '\'' +
