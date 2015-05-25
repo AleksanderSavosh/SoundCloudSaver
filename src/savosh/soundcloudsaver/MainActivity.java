@@ -18,6 +18,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.main_activity);
 
         Picasso.with(this).setIndicatorsEnabled(true);
+        SimpleDiskCache.init(this);
 
         mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);

@@ -12,6 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import savosh.soundcloudsaver.model.Track;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 
 public class TrackPlayer {
 
@@ -90,6 +95,9 @@ public class TrackPlayer {
             this.title.setText(current.getTitle());
             try {
                 Log.i(getClass().getName(), "Stream url: " + current.getStreamUrl());
+                InputStream inputStream = new URL(current.getStreamUrl()).openConnection().getInputStream();
+
+
                 mediaPlayer = MediaPlayer.create(context, Uri.parse(current.getStreamUrl()));
                 mediaPlayer.start();
                 playerProgress = new PlayerProgress();
@@ -175,6 +183,9 @@ public class TrackPlayer {
                     return null;
                 }
                 if(stop){
+                    return null;
+                }
+                if(!mediaPlayer.isPlaying()){
                     return null;
                 }
                 publishProgress();

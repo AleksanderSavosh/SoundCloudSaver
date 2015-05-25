@@ -8,9 +8,11 @@ import com.google.gson.GsonBuilder;
 import com.turbomanage.httpclient.BasicHttpClient;
 import com.turbomanage.httpclient.HttpResponse;
 import com.turbomanage.httpclient.ParameterMap;
+import savosh.soundcloudsaver.SimpleDiskCache;
 import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.trans.ListTrackJsonDeserializer;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,15 +44,18 @@ public class TrackService {
     }
 
     public List<Track> find(String text){
-        List<Track> tracks = cache.getIfPresent(text);
+//        List<Track> tracks = cache.getIfPresent(text);
+        List<Track> tracks = (List<Track>) SimpleDiskCache.get(text);
         if(tracks == null) {
+            Log.d(getClass().getName(), "Load from internet: " + text);
             String response = doGet(text);
             if(response == null){
                 return tracks;
             }
             Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListTrackJsonDeserializer()).create();
             tracks = gson.fromJson(response, List.class);
-            cache.put(text, tracks);
+//            cache.put(text, tracks);
+            SimpleDiskCache.put(text, (Serializable) tracks);
         }
         return tracks;
     }

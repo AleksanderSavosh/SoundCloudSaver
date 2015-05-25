@@ -1,6 +1,8 @@
 package savosh.soundcloudsaver.model;
 
-public class Track {
+import java.io.Serializable;
+
+public class Track implements Serializable {
 
     String title;
     Integer likesCount;
