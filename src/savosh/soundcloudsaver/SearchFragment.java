@@ -73,12 +73,12 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        final TrackPlayer trackPlayer = TrackPlayer.init(getActivity(), v);
+        TrackPlayer.init(getActivity(), v);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Track track = adapter.getItem(position);
-                trackPlayer.put(adapter.getItem(position));
+                TrackPlayer.put(track);
                 Toast.makeText(getActivity(), "Add to player: " + track.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });

@@ -12,9 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import savosh.soundcloudsaver.model.Track;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 
@@ -26,6 +24,7 @@ public class TrackPlayer {
     private TextView title;
     private ProgressBar progress;
     private TextView time;
+    private TextView nextTextView;
 
     private Context context;
     private MediaPlayer mediaPlayer = null;
@@ -41,16 +40,25 @@ public class TrackPlayer {
         this.title = (TextView) root.findViewById(R.id.main_search_fragment_title);
         this.progress = (ProgressBar) root.findViewById(R.id.main_search_fragment_progress_play);
         this.time = (TextView) root.findViewById(R.id.main_search_fragment_time);
+        this.nextTextView = (TextView) root.findViewById(R.id.main_search_fragment_next);
 
         this.play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Play", Toast.LENGTH_SHORT).show();
-                if(mediaPlayer == null){
-                    playNext();
-                } else if(next != null && current != null && !next.equals(current)){
-                    release();
-                    playNext();
+                if(current != null){
+                    if(mediaPlayer == null){
+                        try {
+                            Log.i(getClass().getName(), "Stream url: " + current.getStreamUrl());
+                            mediaPlayer = MediaPlayer.create(context, Uri.parse(current.getStreamUrl()));
+                            mediaPlayer.start();
+                            playerProgress = new PlayerProgress();
+                        } catch (Exception e) {
+                            Log.e(getClass().getName(), "Error in block start play track: " + e.getMessage(), e);
+                        }
+                    } else {
+                        mediaPlayer.start();
+                        playerProgress = new PlayerProgress();
+                    }
                 }
             }
         });
@@ -59,7 +67,14 @@ public class TrackPlayer {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "Pause", Toast.LENGTH_SHORT).show();
-                pause();
+                if (mediaPlayer != null) {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                    }
+                }
+                if(playerProgress != null) {
+                    playerProgress.setStop(true);
+                }
             }
         });
 
@@ -67,70 +82,13 @@ public class TrackPlayer {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "Stop", Toast.LENGTH_SHORT).show();
-                stop();
+                current = next;
+                player.title.setText(next.getTitle());
+                next = null;
+                nextTextView.setVisibility(View.GONE);
+                release();
             }
         });
-    }
-
-    private static TrackPlayer player;
-
-    public static TrackPlayer init(Context context, View root) {
-        if (player == null) {
-            player = new TrackPlayer(context, root);
-        }
-        return player;
-    }
-
-    public TrackPlayer put(Track track){
-        title.setText(track.getTitle());
-        this.next = track;
-        return this;
-    }
-
-
-    private void playNext(){
-        if(next != null) {
-            current = next;
-            next = null;
-            this.title.setText(current.getTitle());
-            try {
-                Log.i(getClass().getName(), "Stream url: " + current.getStreamUrl());
-                InputStream inputStream = new URL(current.getStreamUrl()).openConnection().getInputStream();
-
-
-                mediaPlayer = MediaPlayer.create(context, Uri.parse(current.getStreamUrl()));
-                mediaPlayer.start();
-                playerProgress = new PlayerProgress();
-            } catch (Exception e) {
-                Log.e(getClass().getName(), "Error in block start play track: " + e.getMessage(), e);
-            }
-        }
-    }
-
-    private void pause() {
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-            }
-        }
-        playerProgress.setStop(true);
-    }
-
-    private void stop() {
-        if(next == null){
-            next = current;
-            current = null;
-        }
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-        }
-        playerProgress.setStop(true);
-    }
-
-    public void destroy() {
-        release();
     }
 
     private void release() {
@@ -144,6 +102,31 @@ public class TrackPlayer {
         }
         if(playerProgress != null){
             playerProgress.setStop(true);
+        }
+    }
+
+    private static TrackPlayer player;
+    public static void init(Context context, View root) {
+        if (player == null) {
+            player = new TrackPlayer(context, root);
+        }
+    }
+
+    public static void put(Track track){
+        if(player.current == null){
+            player.title.setText(track.getTitle());
+            player.current = track;
+        } else {
+            player.nextTextView.setVisibility(View.VISIBLE);
+            player.nextTextView.setText(track.getTitle());
+            player.next = track;
+        }
+    }
+
+    public static void destroy() {
+        if(player != null) {
+            player.release();
+            player = null;
         }
     }
 

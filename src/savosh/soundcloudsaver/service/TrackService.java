@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TrackService {
 
-    Cache<String, List<Track>> cache = CacheBuilder.newBuilder().maximumSize(100).build();
+    Cache<String, List<Track>> memCache = CacheBuilder.newBuilder().maximumSize(100).build();
 
     private TrackService(){}
 
@@ -44,18 +44,20 @@ public class TrackService {
     }
 
     public List<Track> find(String text){
-//        List<Track> tracks = cache.getIfPresent(text);
-        List<Track> tracks = (List<Track>) SimpleDiskCache.get(text);
+        List<Track> tracks = memCache.getIfPresent(text);
         if(tracks == null) {
-            Log.d(getClass().getName(), "Load from internet: " + text);
-            String response = doGet(text);
-            if(response == null){
-                return tracks;
+            tracks = (List<Track>) SimpleDiskCache.get(text);
+            if (tracks == null) {
+                Log.d(getClass().getName(), "Load from internet: " + text);
+                String response = doGet(text);
+                if (response == null) {
+                    return tracks;
+                }
+                Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListTrackJsonDeserializer()).create();
+                tracks = gson.fromJson(response, List.class);
+                memCache.put(text, tracks);
+                SimpleDiskCache.put(text, tracks);
             }
-            Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListTrackJsonDeserializer()).create();
-            tracks = gson.fromJson(response, List.class);
-//            cache.put(text, tracks);
-            SimpleDiskCache.put(text, (Serializable) tracks);
         }
         return tracks;
     }

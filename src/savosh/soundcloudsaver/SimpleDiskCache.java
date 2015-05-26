@@ -18,14 +18,16 @@ public class SimpleDiskCache {
     }
 
     public static void init(Context context){
-        simpleDiskCache = new SimpleDiskCache(context);
-        File cacheDir = simpleDiskCache.context.getCacheDir();
-        File[] files = cacheDir.listFiles();
-        simpleDiskCache.map = new HashMap<>();
-        for(File file : files){
-            if(file.canRead()) {
-                simpleDiskCache.map.put(file.getName(), file);
-                Log.d(SimpleDiskCache.class.getName(), "Disk cache: Key: " + file.getName());
+        if(simpleDiskCache == null) {
+            simpleDiskCache = new SimpleDiskCache(context);
+            File cacheDir = simpleDiskCache.context.getCacheDir();
+            File[] files = cacheDir.listFiles();
+            simpleDiskCache.map = new HashMap<>();
+            for (File file : files) {
+                if (file.canRead()) {
+                    simpleDiskCache.map.put(file.getName(), file);
+                    Log.d(SimpleDiskCache.class.getName(), "Disk cache: Key: " + file.getName());
+                }
             }
         }
     }
@@ -74,10 +76,16 @@ public class SimpleDiskCache {
         throw new IllegalArgumentException("SimpleDiskCache is not init.");
     }
 
-    public static void put(String key, Serializable value){
+    /**
+     *
+     * @param key
+     * @param value must be Serializable
+     */
+    public static void put(String key, Object value){
         if(simpleDiskCache != null){
             if(simpleDiskCache.map.containsKey(key)){
-
+                throw new UnsupportedOperationException(
+                        "Don't need call the method put if the key is present in the cache");
             } else {
                 File cacheDir = simpleDiskCache.context.getCacheDir();
                 File file = new File(cacheDir.getAbsolutePath() + "/" + key);
@@ -89,6 +97,7 @@ public class SimpleDiskCache {
                         fileOutputStream = new FileOutputStream(file);
                         objectOutputStream = new ObjectOutputStream(fileOutputStream);
                         objectOutputStream.writeObject(value);
+                        simpleDiskCache.map.put(key, file);
                         Log.d(SimpleDiskCache.class.getName(), "Successfully cached object");
                     }
                 } catch (IOException e) {
