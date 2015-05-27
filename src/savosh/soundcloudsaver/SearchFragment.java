@@ -1,10 +1,11 @@
 package savosh.soundcloudsaver;
 
+import android.app.Activity;
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
@@ -16,7 +17,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
-
+    public static final String TAG = "SearchFragment";
     public static final String RESULT_KEY = "result";
     private List<Track> tracks;
 
@@ -28,9 +29,19 @@ public class SearchFragment extends Fragment {
         ListView listView = (ListView) v.findViewById(R.id.main_search_fragment_list_view);
         EditText editText = (EditText) v.findViewById(R.id.main_search_fragment_edit_text);
 
-        final SearchedItemsArrayAdapter adapter = new SearchedItemsArrayAdapter(getActivity());
+        final SearchedItemsArrayAdapter adapter = new SearchedItemsArrayAdapter(getActivity(), new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Track track = (Track) v.getTag();
+                Log.i(getClass().getName(), "Save: " + track.getTitle());
+                FragmentTabHost mTabHost = (FragmentTabHost) getActivity().findViewById(android.R.id.tabhost);
+                mTabHost.setCurrentTabByTag(SaverFragment.TAG);
+            }
+        });
         if(savedInstanceState != null && savedInstanceState.containsKey(RESULT_KEY)){
             tracks = (List) savedInstanceState.get(RESULT_KEY);
+            adapter.addAll(tracks);
+        } else if(tracks != null){
             adapter.addAll(tracks);
         }
         listView.setAdapter(adapter);
@@ -87,7 +98,6 @@ public class SearchFragment extends Fragment {
                     Log.i(getClass().getName(), "Save: " + adapter.getItem(position).getTitle());
                 }
 
-
                 Track track = adapter.getItem(position);
                 TrackPlayer.put(track);
                 Toast.makeText(getActivity(), "Add to player: " + track.getTitle(), Toast.LENGTH_SHORT).show();
@@ -113,10 +123,65 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.i(getClass().getName(), "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         if(tracks != null) {
             outState.putSerializable(RESULT_KEY, (Serializable) tracks);
+            tracks = null;
         }
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        Log.i(getClass().getName(), "onAttach");
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        Log.i(getClass().getName(), "onDetach");
+        super.onDetach();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(getClass().getName(), "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(getClass().getName(), "onCreate");
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.i(getClass().getName(), "onDestroyView");
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onStart() {
+        Log.i(getClass().getName(), "onStart");
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        Log.i(getClass().getName(), "onResume");
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.i(getClass().getName(), "onPause");
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        Log.i(getClass().getName(), "onStop");
+        super.onStop();
+    }
 }

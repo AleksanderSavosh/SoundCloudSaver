@@ -12,8 +12,12 @@ import savosh.soundcloudsaver.model.Track;
 
 
 public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
-    public SearchedItemsArrayAdapter(Context context) {
+
+    private View.OnClickListener saveOnClickListener;
+
+    public SearchedItemsArrayAdapter(Context context, View.OnClickListener saveOnClickListener) {
         super(context, R.layout.main_search_fragment_list_item);
+        this.saveOnClickListener = saveOnClickListener;
     }
 
     private class ViewHolder {
@@ -21,6 +25,7 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
         TextView title;
         TextView likesNumber;
         TextView time;
+        ImageView save;
     }
 
     @Override
@@ -37,6 +42,7 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
             viewHolder.title = (TextView) row.findViewById(R.id.main_search_fragment_list_item_title);
             viewHolder.likesNumber = (TextView) row.findViewById(R.id.main_search_fragment_list_item_likes_number);
             viewHolder.time = (TextView) row.findViewById(R.id.main_search_fragment_list_item_time);
+            viewHolder.save = (ImageView) row.findViewById(R.id.main_search_fragment_list_item_save);
 
             row.setTag(viewHolder);
         }
@@ -66,6 +72,10 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
         } else {
             viewHolder.time.setText("No track duration");
         }
+
+        viewHolder.save.setTag(track);
+        viewHolder.save.setOnClickListener(saveOnClickListener);
+
         return row;
     }
 
