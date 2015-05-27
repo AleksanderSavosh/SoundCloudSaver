@@ -133,7 +133,7 @@ public class TrackPlayer {
     private class PlayerProgress extends AsyncTask<Void, Void, Void>{
 
         public PlayerProgress(){
-            execute();
+            executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         private boolean stop = false;
