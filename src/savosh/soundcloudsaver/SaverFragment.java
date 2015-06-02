@@ -7,13 +7,34 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import savosh.soundcloudsaver.model.Track;
 
 public class SaverFragment extends Fragment {
     public static final String TAG = "SaverFragment";
+    public static Track newTrackForSave;
+
+    public static ArrayAdapter<Track> trackArrayAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(getClass().getName(), "onCreateView");
-        return inflater.inflate(R.layout.main_saver_fragment, container, false);
+        View v = inflater.inflate(R.layout.main_saver_fragment, container, false);
+
+        if(trackArrayAdapter == null) {
+            trackArrayAdapter = new SavedItemsArrayAdapter(getActivity());
+        }
+
+        if(newTrackForSave != null) {
+            trackArrayAdapter.add(newTrackForSave);
+            trackArrayAdapter.notifyDataSetChanged();
+            newTrackForSave = null;
+        }
+
+        ((ListView) v.findViewById(R.id.main_saver_fragment_list_view)).setAdapter(trackArrayAdapter);
+
+        return v;
     }
 
     @Override

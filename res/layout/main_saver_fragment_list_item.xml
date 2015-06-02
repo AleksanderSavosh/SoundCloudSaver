@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/main_search_fragment_list_item">
+
+    <RelativeLayout
+            android:id="@+id/main_saver_fragment_list_item_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:id="@+id/main_saver_fragment_list_item_image"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:padding="2px"
+                android:src="@drawable/music"/>
+
+        <TextView
+                android:id="@+id/main_saver_fragment_list_item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/main_saver_fragment_list_item_image"
+                android:padding="@dimen/default_padding"
+                android:lines="2"
+                android:ellipsize="end"
+                android:text="TITLE TITLE TITLE TITLE TITLE TITLE"/>
+
+        <ProgressBar
+                android:id="@+id/main_saver_fragment_list_item_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/main_saver_fragment_list_item_image"
+                android:layout_below="@id/main_saver_fragment_list_item_title"
+                android:layout_margin="@dimen/default_padding"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:visibility="gone"/>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

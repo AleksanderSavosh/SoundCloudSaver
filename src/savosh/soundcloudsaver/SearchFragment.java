@@ -34,6 +34,7 @@ public class SearchFragment extends Fragment {
             public void onClick(View v) {
                 Track track = (Track) v.getTag();
                 Log.i(getClass().getName(), "Save: " + track.getTitle());
+                SaverFragment.newTrackForSave = track;
                 FragmentTabHost mTabHost = (FragmentTabHost) getActivity().findViewById(android.R.id.tabhost);
                 mTabHost.setCurrentTabByTag(SaverFragment.TAG);
             }
