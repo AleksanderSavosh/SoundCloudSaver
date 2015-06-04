@@ -12,10 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import savosh.soundcloudsaver.model.Track;
 
-import java.io.InputStream;
-import java.net.URL;
-
-
 public class TrackPlayer {
 
     private ImageView play;
@@ -32,8 +28,11 @@ public class TrackPlayer {
     private Track current = null;
     private Track next = null;
 
-    private TrackPlayer(final Context context, View root) {
+    private TrackPlayer(final Context context) {
         this.context = context;
+    }
+
+    private void initViews(View root) {
         this.play = (ImageView) root.findViewById(R.id.main_search_fragment_play);
         this.pause = (ImageView) root.findViewById(R.id.main_search_fragment_pause);
         this.stop = (ImageView) root.findViewById(R.id.main_search_fragment_stop);
@@ -42,11 +41,18 @@ public class TrackPlayer {
         this.time = (TextView) root.findViewById(R.id.main_search_fragment_time);
         this.nextTextView = (TextView) root.findViewById(R.id.main_search_fragment_next);
 
+        if (current != null) {
+            this.title.setText(current.getTitle());
+        }
+        if (next != null) {
+            this.nextTextView.setText(next.getTitle());
+        }
+
         this.play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(current != null){
-                    if(mediaPlayer == null){
+                if (current != null) {
+                    if (mediaPlayer == null) {
                         try {
                             Log.i(getClass().getName(), "Stream url: " + current.getStreamUrl());
                             mediaPlayer = MediaPlayer.create(context, Uri.parse(current.getStreamUrl()));
@@ -72,7 +78,7 @@ public class TrackPlayer {
                         mediaPlayer.pause();
                     }
                 }
-                if(playerProgress != null) {
+                if (playerProgress != null) {
                     playerProgress.setStop(true);
                 }
             }
@@ -100,20 +106,22 @@ public class TrackPlayer {
                 e.printStackTrace();
             }
         }
-        if(playerProgress != null){
+        if (playerProgress != null) {
             playerProgress.setStop(true);
         }
     }
 
     private static TrackPlayer player;
+
     public static void init(Context context, View root) {
         if (player == null) {
-            player = new TrackPlayer(context, root);
+            player = new TrackPlayer(context);
         }
+        player.initViews(root);
     }
 
-    public static void put(Track track){
-        if(player.current == null){
+    public static void put(Track track) {
+        if (player.current == null) {
             player.title.setText(track.getTitle());
             player.current = track;
         } else {
@@ -124,15 +132,15 @@ public class TrackPlayer {
     }
 
     public static void destroy() {
-        if(player != null) {
+        if (player != null) {
             player.release();
             player = null;
         }
     }
 
-    private class PlayerProgress extends AsyncTask<Void, Void, Void>{
+    private class PlayerProgress extends AsyncTask<Void, Void, Void> {
 
-        public PlayerProgress(){
+        public PlayerProgress() {
             executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -151,24 +159,24 @@ public class TrackPlayer {
         protected void onProgressUpdate(Void... values) {
             int currPosition = mediaPlayer.getCurrentPosition();
             Log.i(getClass().getName(), "currPosition: " + currPosition);
-            int currProgress = (int)(currPosition/(float)mediaPlayer.getDuration() * 100);
+            int currProgress = (int) (currPosition / (float) mediaPlayer.getDuration() * 100);
             Log.i(getClass().getName(), "currProgress: " + currProgress);
             progress.setProgress(currProgress);
 
-            time.setText("" + (currPosition/(60000)) + ":" + (currPosition/1000 - currPosition/(60000)*60));
+            time.setText("" + (currPosition / (60000)) + ":" + (currPosition / 1000 - currPosition / (60000) * 60));
 
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            while(true){
-                if(mediaPlayer == null){
+            while (true) {
+                if (mediaPlayer == null) {
                     return null;
                 }
-                if(stop){
+                if (stop) {
                     return null;
                 }
-                if(!mediaPlayer.isPlaying()){
+                if (!mediaPlayer.isPlaying()) {
                     return null;
                 }
                 publishProgress();
@@ -182,6 +190,4 @@ public class TrackPlayer {
             }
         }
     }
-
-
 }

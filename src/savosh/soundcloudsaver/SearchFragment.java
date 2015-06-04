@@ -95,10 +95,6 @@ public class SearchFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(view.getId() == R.id.main_search_fragment_list_item_save){
-                    Log.i(getClass().getName(), "Save: " + adapter.getItem(position).getTitle());
-                }
-
                 Track track = adapter.getItem(position);
                 TrackPlayer.put(track);
                 Toast.makeText(getActivity(), "Add to player: " + track.getTitle(), Toast.LENGTH_SHORT).show();
