@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import savosh.soundcloudsaver.adapter.SavedItemsArrayAdapter;
 import savosh.soundcloudsaver.model.Track;
 
 public class SaverFragment extends Fragment {

@@ -1,4 +1,4 @@
-package savosh.soundcloudsaver.trans;
+package savosh.soundcloudsaver.convert;
 
 import com.google.gson.*;
 import savosh.soundcloudsaver.model.Track;
@@ -20,13 +20,15 @@ public class ListTrackJsonDeserializer implements JsonDeserializer<List<Track>> 
                     Track track = new Track();
                     track.setTitle(jsonObject.get("title").getAsString());
                     if(jsonObject.has("artwork_url") && !jsonObject.get("artwork_url").isJsonNull()) {
-                        track.setArtworkUrl(jsonObject.get("artwork_url").getAsString() + "?client_id=b45b1aa10f1ac2941910a7f0d10f8e28");
+                        track.setArtworkUrl(jsonObject.get("artwork_url").getAsString()
+                                + "?client_id=b45b1aa10f1ac2941910a7f0d10f8e28");
                     }
                     track.setDuration(jsonObject.get("duration").getAsLong());
                     if(jsonObject.has("likes_count") && !jsonObject.get("likes_count").isJsonNull()) {
                         track.setLikesCount(jsonObject.get("likes_count").getAsInt());
                     }
-                    track.setStreamUrl(jsonObject.get("stream_url").getAsString() + "?client_id=b45b1aa10f1ac2941910a7f0d10f8e28");
+                    track.setStreamUrl(jsonObject.get("stream_url").getAsString()
+                            + "?client_id=b45b1aa10f1ac2941910a7f0d10f8e28");
                     tracks.add(track);
                 }
             }

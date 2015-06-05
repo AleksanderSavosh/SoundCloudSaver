@@ -1,4 +1,4 @@
-package savosh.soundcloudsaver;
+package savosh.soundcloudsaver.adapter;
 
 
 import android.content.Context;
@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.squareup.picasso.Picasso;
+import savosh.soundcloudsaver.R;
 import savosh.soundcloudsaver.model.Track;
+import savosh.soundcloudsaver.task.SaveTask;
 
 import java.io.*;
 import java.net.URL;
@@ -21,62 +23,6 @@ import java.util.Map;
 public class SavedItemsArrayAdapter extends ArrayAdapter<Track> {
 
     public static Map<Track, SaveTask> savingsTrack = new HashMap<>();
-
-    public static class SaveTask extends AsyncTask<Track, Integer, Track> {
-        private ProgressBar progressBar;
-        private static final int MAX_PROGRESS = 100;
-        public void setProgressBar(ProgressBar progressBar) {
-            this.progressBar = progressBar;
-            this.progressBar.setProgress(MAX_PROGRESS);
-            this.progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            if(progressBar != null){
-                progressBar.setProgress(values[0]);
-            }
-        }
-
-        @Override
-        protected Track doInBackground(Track... params) {
-            int count;
-            try {
-                URL url = new URL(params[0].getStreamUrl());
-                URLConnection conexion = url.openConnection();
-                conexion.connect();
-                int lenghtOfFile = conexion.getContentLength();
-                Log.d("ANDRO_ASYNC", "Lenght of file: " + lenghtOfFile);
-                InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = new FileOutputStream(
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                                + "/" + params[0].getTitle() + ".mp3");
-                byte data[] = new byte[1024];
-                long total = 0;
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-                    publishProgress((int)((total*100)/lenghtOfFile));
-                    output.write(data, 0, count);
-                }
-
-                output.flush();
-                output.close();
-                input.close();
-                return params[0];
-            } catch (Exception e) {}
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Track aVoid) {
-            if(progressBar != null){
-                progressBar.setVisibility(View.GONE);
-            }
-            if(aVoid != null ) {
-//                Toast.makeText(,"Finish save: " + aVoid.getTitle(),);
-            }
-        }
-    }
 
     public SavedItemsArrayAdapter(Context context) {
         super(context, 0);

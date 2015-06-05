@@ -8,6 +8,7 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
+import savosh.soundcloudsaver.cache.Cache;
 
 public class MainActivity extends FragmentActivity {
     private FragmentTabHost mTabHost;
@@ -18,7 +19,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.main_activity);
 
         Picasso.with(this).setIndicatorsEnabled(true);
-        SimpleDiskCache.init(this);
+        Cache.init(this);
 
         mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);

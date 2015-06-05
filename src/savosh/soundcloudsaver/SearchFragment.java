@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
+import savosh.soundcloudsaver.adapter.SearchedItemsArrayAdapter;
 import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.service.TrackService;
 
@@ -68,7 +69,7 @@ public class SearchFragment extends Fragment {
 
                             @Override
                             protected List<Track> doInBackground(Void... params) {
-                                return TrackService.service().find(searchText);
+                                return TrackService.find(searchText);
                             }
 
                             @Override

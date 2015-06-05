@@ -1,4 +1,4 @@
-package savosh.soundcloudsaver;
+package savosh.soundcloudsaver.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
+import savosh.soundcloudsaver.R;
 import savosh.soundcloudsaver.model.Track;
 
 
