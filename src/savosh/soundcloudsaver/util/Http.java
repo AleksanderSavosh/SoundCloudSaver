@@ -1,6 +1,5 @@
-package savosh.soundcloudsaver.http;
+package savosh.soundcloudsaver.util;
 
-import com.google.common.collect.Maps;
 import com.turbomanage.httpclient.BasicHttpClient;
 import com.turbomanage.httpclient.HttpResponse;
 import com.turbomanage.httpclient.ParameterMap;

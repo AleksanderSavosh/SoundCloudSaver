@@ -2,9 +2,6 @@ package savosh.soundcloudsaver.adapter;
 
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,28 +9,13 @@ import android.widget.*;
 import com.squareup.picasso.Picasso;
 import savosh.soundcloudsaver.R;
 import savosh.soundcloudsaver.model.Track;
-import savosh.soundcloudsaver.task.SaveTask;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Map;
+import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SavedItemsArrayAdapter extends ArrayAdapter<Track> {
 
-    public static Map<Track, SaveTask> savingsTrack = new HashMap<>();
-
-    public SavedItemsArrayAdapter(Context context) {
-        super(context, 0);
-    }
-
-    @Override
-    public void add(Track object) {
-        super.add(object);
-        SaveTask saveTask = new SaveTask();
-        saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, object);
-        savingsTrack.put(object, saveTask);
+    public SavedItemsArrayAdapter() {
+        super(mainActivity, 0);
     }
 
     private class ViewHolder {
@@ -62,11 +44,10 @@ public class SavedItemsArrayAdapter extends ArrayAdapter<Track> {
         final ViewHolder viewHolder = (ViewHolder) row.getTag();
         final Track track = getItem(position);
 
-        if(savingsTrack.containsKey(track)){
+        if(savingsTrack != null && savingsTrack.containsKey(track)){
             savingsTrack.get(track).setProgressBar(viewHolder.progress);
         } else {
-            viewHolder.progress.setMax(100);
-            viewHolder.progress.setProgress(100);
+            viewHolder.progress.setVisibility(View.GONE);
         }
 
         if(track.getArtworkUrl() != null && track.getArtworkUrl().trim().length() > 0) {

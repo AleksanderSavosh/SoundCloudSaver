@@ -37,10 +37,85 @@
                     android:layout_toLeftOf="@id/main_activity_menu_image"
                     android:layout_gravity="bottom"/>
         </RelativeLayout>
+
+        <RelativeLayout
+                android:id="@+id/main_activity_player"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentBottom="true">
+            <LinearLayout
+                    android:id="@+id/main_activity_buttons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="horizontal">
+                <ImageView
+                        android:id="@+id/main_activity_play"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/default_padding"
+                        android:src="@drawable/play"/>
+                <ImageView
+                        android:id="@+id/main_activity_pause"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/default_padding"
+                        android:src="@drawable/pause"/>
+                <ImageView
+                        android:id="@+id/main_activity_stop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/default_padding"
+                        android:src="@drawable/stop"/>
+            </LinearLayout>
+            <TextView
+                    android:id="@+id/main_activity_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:padding="@dimen/default_padding"
+                    android:text="00:00"/>
+            <TextView
+                    android:id="@+id/main_activity_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/main_activity_buttons"
+                    android:layout_toLeftOf="@id/main_activity_time"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:text="@string/app_name"/>
+
+            <ProgressBar
+                    android:id="@+id/main_activity_progress_play"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_toRightOf="@id/main_activity_buttons"
+                    android:layout_toLeftOf="@id/main_activity_time"
+                    android:max="100"
+                    android:progress="0"
+                    android:layout_below="@id/main_activity_title"/>
+            <TextView
+                    android:id="@+id/main_activity_next"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_activity_buttons"
+                    android:paddingBottom="@dimen/default_padding"
+                    android:paddingRight="@dimen/default_padding"
+                    android:paddingLeft="@dimen/default_padding"
+                    android:lines="1"
+                    android:ellipsize="end"
+                    android:text="Next: NEXT NEXT NEXT NEXT NEXT"
+                    android:visibility="gone"/>
+        </RelativeLayout>
+
         <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_above="@id/main_activity_player"
                 android:layout_below="@id/main_activity_toolbar">
         </FrameLayout>
     </RelativeLayout>

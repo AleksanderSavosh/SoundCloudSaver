@@ -9,16 +9,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import savosh.soundcloudsaver.R;
+import savosh.soundcloudsaver.listener.OnSaveTrackClickListener;
 import savosh.soundcloudsaver.model.Track;
 
+import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
 
-    private View.OnClickListener saveOnClickListener;
-
-    public SearchedItemsArrayAdapter(Context context, View.OnClickListener saveOnClickListener) {
-        super(context, R.layout.main_search_fragment_list_item);
-        this.saveOnClickListener = saveOnClickListener;
+    public SearchedItemsArrayAdapter() {
+        super(mainActivity, R.layout.main_search_fragment_list_item);
     }
 
     private class ViewHolder {
@@ -75,19 +74,20 @@ public class SearchedItemsArrayAdapter extends ArrayAdapter<Track> {
         }
 
         viewHolder.save.setTag(track);
-        viewHolder.save.setOnClickListener(saveOnClickListener);
-
+        viewHolder.save.setOnClickListener(onSaveTrackClickListener == null ?
+                onSaveTrackClickListener = new OnSaveTrackClickListener() : onSaveTrackClickListener);
         return row;
     }
 
     private String durationToTime(long d){
-        StringBuilder stringBuilder = new StringBuilder();
+        String minutes = "" + (int)d/60000;
+        String seconds = "" + ((int)d/1000 - ((int)d/60000)*60);
 
-        stringBuilder.append((int)d/60000);
-        stringBuilder.append(":");
-        stringBuilder.append((int)d/1000 - ((int)d/60000)*60);
+        minutes = minutes.length() == 1 ? "0" + minutes : minutes;
+        seconds = seconds.length() == 1 ? "0" + seconds : seconds;
 
-        return stringBuilder.toString();
+        return new StringBuilder()
+                .append(minutes).append(":").append(seconds).toString();
     }
 
 }

@@ -14,15 +14,21 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SaveTask extends AsyncTask<Track, Integer, Track> {
     private static final int MAX_PROGRESS = 100;
+
+    public SaveTask(Track track) {
+        executeOnExecutor(THREAD_POOL_EXECUTOR, track);
+    }
 
     private ProgressBar progressBar;
 
     public void setProgressBar(ProgressBar progressBar) {
         this.progressBar = progressBar;
-        this.progressBar.setProgress(MAX_PROGRESS);
+        this.progressBar.setMax(MAX_PROGRESS);
+        this.progressBar.setProgress(0);
         this.progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -38,10 +44,10 @@ public class SaveTask extends AsyncTask<Track, Integer, Track> {
         int count;
         try {
             URL url = new URL(params[0].getStreamUrl());
-            URLConnection conexion = url.openConnection();
-            conexion.connect();
-            int lengthOfFile = conexion.getContentLength();
-            Log.d("ANDRO_ASYNC", "Lenght of file: " + lengthOfFile);
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            int lengthOfFile = connection.getContentLength();
+            Log.d(getClass().getName(), "Length of file: " + lengthOfFile);
             InputStream input = new BufferedInputStream(url.openStream());
             OutputStream output = new FileOutputStream(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -67,8 +73,9 @@ public class SaveTask extends AsyncTask<Track, Integer, Track> {
         if(progressBar != null){
             progressBar.setVisibility(View.GONE);
         }
-        if(track != null ) {
-//                Toast.makeText(,"Finish save: " + aVoid.getTitle(),);
+        savingsTrack.remove(track);
+        if(!savedTracks.contains(track)) {
+            savedTracks.add(track);
         }
     }
 }
