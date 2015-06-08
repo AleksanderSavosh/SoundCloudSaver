@@ -18,6 +18,8 @@ import static savosh.soundcloudsaver.ObjectsLocator.*;
 public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         Log.d(getClass().getName(), "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);

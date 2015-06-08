@@ -30,6 +30,7 @@ goo.gl/dMMEFu
 - добавить кнопку уладить текст из поиска
 - определиться, что все таки делает менюшка в правом верхнем углу
 - выпелить гавно авторизацию из convert.ListTrackJsonDeserializer
+- перенести часть объектов из ObjectsLocator в ApplicationObjects (в итоге надо избавиться от ObjectsLocator)
 
 
 
