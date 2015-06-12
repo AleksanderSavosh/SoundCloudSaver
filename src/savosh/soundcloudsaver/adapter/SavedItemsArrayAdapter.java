@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.squareup.picasso.Picasso;
+import savosh.soundcloudsaver.ApplicationContext;
 import savosh.soundcloudsaver.R;
 import savosh.soundcloudsaver.model.Track;
 
@@ -14,8 +15,8 @@ import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SavedItemsArrayAdapter extends ArrayAdapter<Track> {
 
-    public SavedItemsArrayAdapter() {
-        super(mainActivity, 0);
+    public SavedItemsArrayAdapter(Context context) {
+        super(context, 0);
     }
 
     private class ViewHolder {

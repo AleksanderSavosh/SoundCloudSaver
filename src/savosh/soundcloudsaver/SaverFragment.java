@@ -1,6 +1,10 @@
 package savosh.soundcloudsaver;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -22,30 +26,34 @@ import static savosh.soundcloudsaver.ObjectsLocator.*;
 public class SaverFragment extends Fragment {
     public static final String TAG = SaverFragment.class.getName();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(getClass().getName(), "onCreateView");
-        View v = inflater.inflate(R.layout.main_saver_fragment, container, false);
-        saverFragment = this;
-
-        if(savedItemsArrayAdapter == null) {
-            savedItemsArrayAdapter = new SavedItemsArrayAdapter();
-            savedTracks = TrackService.read();
-            savedItemsArrayAdapter.addAll(savedTracks);
-        }
-
-        if(newTrackForSave != null) {
-            if(!savedTracks.contains(newTrackForSave) &&
-                    (savingsTrack == null || savingsTrack != null && !savingsTrack.containsKey(newTrackForSave))) {
-                (savingsTrack == null ? savingsTrack = new HashMap<Track, SaveTask>() : savingsTrack)
-                        .put(newTrackForSave, new SaveTask(newTrackForSave));
-                savedItemsArrayAdapter.add(newTrackForSave);
+    public static final String BROADCAST_SAVE_TRACK = "savosh.soundcloudsaver.SaverFragment.saveTrack";
+    public static final String BROADCAST_KEY_SAVE_TRACK = "trackForSave";
+    private BroadcastReceiver broadcastSaveTrack = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Track track = (Track) intent.getSerializableExtra(BROADCAST_KEY_SAVE_TRACK);
+            if(!savedTracks.contains(track) && (savingsTrack == null || savingsTrack != null && !savingsTrack.containsKey(track))) {
+                (savingsTrack == null ? savingsTrack = new HashMap<Track, SaveTask>() : savingsTrack).put(track, new SaveTask(track));
+                savedItemsArrayAdapter.add(track);
                 savedItemsArrayAdapter.notifyDataSetChanged();
             } else {
                 Log.d(getClass().getName(), "Track has already been saved");
             }
-            newTrackForSave = null;
         }
+    };
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(getClass().getName(), "onCreateView");
+        View v = inflater.inflate(R.layout.main_saver_fragment, container, false);
+//        saverFragment = this;
+
+        if(savedItemsArrayAdapter == null) {
+            savedItemsArrayAdapter = new SavedItemsArrayAdapter(getActivity());
+            savedTracks = TrackService.read();
+            savedItemsArrayAdapter.addAll(savedTracks);
+        }
+
 
         ((ListView) v.findViewById(R.id.main_saver_fragment_list_view))
                 .setAdapter(savedItemsArrayAdapter);
@@ -87,6 +95,7 @@ public class SaverFragment extends Fragment {
     public void onResume() {
         Log.d(getClass().getName(), "onResume");
         super.onResume();
+        getActivity().registerReceiver(broadcastSaveTrack, new IntentFilter(BROADCAST_SAVE_TRACK));
     }
 
     @Override
@@ -99,6 +108,8 @@ public class SaverFragment extends Fragment {
     public void onPause() {
         Log.d(getClass().getName(), "onPause");
         super.onPause();
+        getActivity().unregisterReceiver(broadcastSaveTrack);
+
     }
 
     @Override

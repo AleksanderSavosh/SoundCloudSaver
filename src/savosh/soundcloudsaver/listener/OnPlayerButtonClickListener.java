@@ -3,29 +3,27 @@ package savosh.soundcloudsaver.listener;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import savosh.soundcloudsaver.ObjectsLocator;
-import savosh.soundcloudsaver.Operation;
-import savosh.soundcloudsaver.PlayerService;
-import savosh.soundcloudsaver.R;
+import savosh.soundcloudsaver.*;
 
 
 public class OnPlayerButtonClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(ApplicationContext.instance, PlayerService.class);
         switch (v.getId()) {
             case R.id.main_activity_play:
                 Log.i(getClass().getName(), "Play!");
-                ObjectsLocator.operation = Operation.PLAY;
+                intent.putExtra(PlayerService.INTENT_KEY_OPERATION, Operation.PLAY);
                 break;
             case R.id.main_activity_pause:
                 Log.i(getClass().getName(), "Pause!");
-                ObjectsLocator.operation = Operation.PAUSE;
+                intent.putExtra(PlayerService.INTENT_KEY_OPERATION, Operation.PAUSE);
                 break;
             case R.id.main_activity_stop:
                 Log.i(getClass().getName(), "Stop!");
-                ObjectsLocator.operation = Operation.STOP;
+                intent.putExtra(PlayerService.INTENT_KEY_OPERATION, Operation.STOP);
                 break;
         }
-        ObjectsLocator.mainActivity.startService(new Intent(ObjectsLocator.mainActivity, PlayerService.class));
+        ApplicationContext.instance.startService(intent);
     }
 }

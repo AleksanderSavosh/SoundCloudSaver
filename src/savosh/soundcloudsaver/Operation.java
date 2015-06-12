@@ -1,5 +1,7 @@
 package savosh.soundcloudsaver;
 
-public enum Operation {
+import java.io.Serializable;
+
+public enum Operation implements Serializable{
     PLAY, PAUSE, STOP, NEXT, PREVIOUS;
 }

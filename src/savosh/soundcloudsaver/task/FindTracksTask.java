@@ -3,8 +3,10 @@ package savosh.soundcloudsaver.task;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+import savosh.soundcloudsaver.ApplicationContext;
 import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.service.TrackService;
 
@@ -14,7 +16,14 @@ import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class FindTracksTask extends AsyncTask<Void, Void, List<Track>> {
 
-    public FindTracksTask() {
+    private String searchText;
+    private ProgressBar forSearchProgressBar;
+    private ArrayAdapter<Track> searchedItemsArrayAdapter;
+
+    public FindTracksTask(String searchText, ProgressBar forSearchProgressBar, ArrayAdapter<Track> searchedItemsArrayAdapter) {
+        this.searchText = searchText;
+        this.forSearchProgressBar = forSearchProgressBar;
+        this.searchedItemsArrayAdapter = searchedItemsArrayAdapter;
         this.executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 
@@ -23,7 +32,7 @@ public class FindTracksTask extends AsyncTask<Void, Void, List<Track>> {
         searchedItemsArrayAdapter.clear();
         searchedItemsArrayAdapter.notifyDataSetChanged();
         forSearchProgressBar.setVisibility(View.VISIBLE);
-        Toast.makeText(mainActivity, "Search text: " + searchText, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ApplicationContext.instance, "Search text: " + searchText, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -40,7 +49,7 @@ public class FindTracksTask extends AsyncTask<Void, Void, List<Track>> {
             searchedItemsArrayAdapter.addAll(list);
             searchedItemsArrayAdapter.notifyDataSetChanged();
         } else {
-            Toast.makeText(mainActivity, "No result", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ApplicationContext.instance, "No result", Toast.LENGTH_SHORT).show();
         }
         findTracksTask = null;
     }

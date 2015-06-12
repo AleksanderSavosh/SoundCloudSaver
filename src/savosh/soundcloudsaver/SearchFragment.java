@@ -26,18 +26,18 @@ public class SearchFragment extends Fragment {
         ListView listView = (ListView) v.findViewById(R.id.main_search_fragment_list_view);
         EditText editText = (EditText) v.findViewById(R.id.main_search_fragment_edit_text);
 
-        searchFragment = this;
+//        searchFragment = this;
 
         if(foundTracks != null){
             (searchedItemsArrayAdapter == null ?
-                    searchedItemsArrayAdapter = new SearchedItemsArrayAdapter() : searchedItemsArrayAdapter)
+                    searchedItemsArrayAdapter = new SearchedItemsArrayAdapter(getActivity()) : searchedItemsArrayAdapter)
                     .addAll(foundTracks);
         }
         listView.setAdapter(searchedItemsArrayAdapter == null ?
-                searchedItemsArrayAdapter = new SearchedItemsArrayAdapter() : searchedItemsArrayAdapter);
+                searchedItemsArrayAdapter = new SearchedItemsArrayAdapter(getActivity()) : searchedItemsArrayAdapter);
 
 
-        forSearchProgressBar = (ProgressBar) v.findViewById(R.id.main_search_fragment_progress_bar);
+        final ProgressBar forSearchProgressBar = (ProgressBar) v.findViewById(R.id.main_search_fragment_progress_bar);
         showKeyboard(editText);
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(final View v, int keyCode, KeyEvent event) {
@@ -45,8 +45,7 @@ public class SearchFragment extends Fragment {
                     if (event.getAction() == KeyEvent.ACTION_UP) {
                         if(findTracksTask == null){
                             hideKeyboard(v);
-                            searchText = ((EditText) v).getText().toString();
-                            findTracksTask = new FindTracksTask();
+                            findTracksTask = new FindTracksTask(((EditText) v).getText().toString(), forSearchProgressBar, searchedItemsArrayAdapter);
                         }
                     }
                     return true;
@@ -56,13 +55,17 @@ public class SearchFragment extends Fragment {
         });
 
 
-        if (currentTrack != null && currentTrackTitle != null) {
-            currentTrackTitle.setText(currentTrack.getTitle());
-        }
-
-        if (nextTrack != null && nextTrackTitle != null) {
-            nextTrackTitle.setText(nextTrack.getTitle());
-        }
+//        if (currentTrack != null) {
+//            Intent intent = new Intent(MainActivity.BROADCAST_SET_CURRENT_TRACK_TITLE);
+//            intent.putExtra(MainActivity.BROADCAST_KEY_TITLE, currentTrack.getTitle());
+//            getActivity().sendBroadcast(intent);
+//        }
+//
+//        if (nextTrack != null) {
+//            Intent intent = new Intent(MainActivity.BROADCAST_SET_NEXT_TRACK_TITLE);
+//            intent.putExtra(MainActivity.BROADCAST_KEY_TITLE, nextTrack.getTitle());
+//            getActivity().sendBroadcast(intent);
+//        }
 
         listView.setOnItemClickListener(onPlayerAddItemClickListener == null ?
                 onPlayerAddItemClickListener = new OnPlayerAddItemClickListener() : onPlayerAddItemClickListener);
