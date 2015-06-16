@@ -13,13 +13,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
+import java.util.Map;
 
 import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SaveTask extends AsyncTask<Track, Integer, Track> {
     private static final int MAX_PROGRESS = 100;
+    final List<Track> savedTracks;
+    final Map<Track, SaveTask> savingsTrack;
 
-    public SaveTask(Track track) {
+    public SaveTask(Track track, final List<Track> savedTracks, final Map<Track, SaveTask> savingsTrack) {
+        this.savedTracks = savedTracks;
+        this.savingsTrack = savingsTrack;
         executeOnExecutor(THREAD_POOL_EXECUTOR, track);
     }
 

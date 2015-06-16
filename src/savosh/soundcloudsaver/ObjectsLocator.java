@@ -23,20 +23,20 @@ public class ObjectsLocator {
 //    public static SearchFragment searchFragment;
 //    public static SaverFragment saverFragment;
 
-    public static SearchedItemsArrayAdapter searchedItemsArrayAdapter;
-    public static SavedItemsArrayAdapter savedItemsArrayAdapter;
+//    public static SearchedItemsArrayAdapter searchedItemsArrayAdapter;
+//    public static SavedItemsArrayAdapter savedItemsArrayAdapter;
 
-    public static OnPlayerAddItemClickListener onPlayerAddItemClickListener;
+//    public static OnPlayerAddItemClickListener onPlayerAddItemClickListener;
 
-    public static List<Track> foundTracks;
+//    public static List<Track> foundTracks;
 //    public static String searchText;
 //    public static ProgressBar forSearchProgressBar;
-    public static FindTracksTask findTracksTask;
+//    public static FindTracksTask findTracksTask;
 
 //    public static Track newTrackForSave;
 //    public static OnSaveTrackClickListener onSaveTrackClickListener;
-    public static Map<Track, SaveTask> savingsTrack;
-    public static List<Track> savedTracks;
+//    public static Map<Track, SaveTask> savingsTrack;
+//    public static List<Track> savedTracks;
 
 //    public static MediaPlayer mediaPlayer;
 //    public static Track currentTrack;

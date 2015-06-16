@@ -12,6 +12,7 @@ import static savosh.soundcloudsaver.ObjectsLocator.*;
 public class OnSaveTrackClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
+        Log.d(getClass().getName(), "Save: " + ((Track) v.getTag()).getTitle());
         Intent intent = new Intent(SaverFragment.BROADCAST_SAVE_TRACK);
         intent.putExtra(SaverFragment.BROADCAST_KEY_SAVE_TRACK, (Track) v.getTag());
 

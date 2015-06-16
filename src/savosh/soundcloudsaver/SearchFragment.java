@@ -2,6 +2,7 @@ package savosh.soundcloudsaver;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,13 +11,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import savosh.soundcloudsaver.adapter.SearchedItemsArrayAdapter;
 import savosh.soundcloudsaver.listener.OnPlayerAddItemClickListener;
+import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.task.FindTracksTask;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SearchFragment extends Fragment {
     public static final String TAG = SearchFragment.class.getName();
+
+    final List<Track> foundTracks = new ArrayList<>();
+    FindTracksTask findTracksTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -28,13 +36,9 @@ public class SearchFragment extends Fragment {
 
 //        searchFragment = this;
 
-        if(foundTracks != null){
-            (searchedItemsArrayAdapter == null ?
-                    searchedItemsArrayAdapter = new SearchedItemsArrayAdapter(getActivity()) : searchedItemsArrayAdapter)
-                    .addAll(foundTracks);
-        }
-        listView.setAdapter(searchedItemsArrayAdapter == null ?
-                searchedItemsArrayAdapter = new SearchedItemsArrayAdapter(getActivity()) : searchedItemsArrayAdapter);
+        final SearchedItemsArrayAdapter searchedItemsArrayAdapter = new SearchedItemsArrayAdapter(getActivity());
+        searchedItemsArrayAdapter.addAll(foundTracks);
+        listView.setAdapter(searchedItemsArrayAdapter);
 
 
         final ProgressBar forSearchProgressBar = (ProgressBar) v.findViewById(R.id.main_search_fragment_progress_bar);
@@ -43,9 +47,10 @@ public class SearchFragment extends Fragment {
             public boolean onKey(final View v, int keyCode, KeyEvent event) {
                 if (keyCode == 66) {
                     if (event.getAction() == KeyEvent.ACTION_UP) {
-                        if(findTracksTask == null){
+                        if(findTracksTask == null || findTracksTask.getStatus() == AsyncTask.Status.FINISHED){
                             hideKeyboard(v);
-                            findTracksTask = new FindTracksTask(((EditText) v).getText().toString(), forSearchProgressBar, searchedItemsArrayAdapter);
+                            findTracksTask = new FindTracksTask(((EditText) v).getText().toString(),
+                                    forSearchProgressBar, searchedItemsArrayAdapter, foundTracks);
                         }
                     }
                     return true;
@@ -67,8 +72,7 @@ public class SearchFragment extends Fragment {
 //            getActivity().sendBroadcast(intent);
 //        }
 
-        listView.setOnItemClickListener(onPlayerAddItemClickListener == null ?
-                onPlayerAddItemClickListener = new OnPlayerAddItemClickListener() : onPlayerAddItemClickListener);
+        listView.setOnItemClickListener(new OnPlayerAddItemClickListener());
 
         return v;
     }

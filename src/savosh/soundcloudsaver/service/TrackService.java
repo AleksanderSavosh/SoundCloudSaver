@@ -30,7 +30,7 @@ public class TrackService {
         TrackDao.put(tracks);
     }
 
-    public static List<Track> read() {
+    public static List<Track> readSaved() {
         List<Track> tracks = TrackDao.getSaved();
         if (tracks == null) {
             return new ArrayList<>();

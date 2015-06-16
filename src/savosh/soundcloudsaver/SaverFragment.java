@@ -18,7 +18,9 @@ import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.service.TrackService;
 import savosh.soundcloudsaver.task.SaveTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static savosh.soundcloudsaver.ObjectsLocator.*;
@@ -28,16 +30,20 @@ public class SaverFragment extends Fragment {
 
     public static final String BROADCAST_SAVE_TRACK = "savosh.soundcloudsaver.SaverFragment.saveTrack";
     public static final String BROADCAST_KEY_SAVE_TRACK = "trackForSave";
+    final List<Track> savedTracks = TrackService.readSaved();
+    final Map<Track, SaveTask> savingsTrack = new HashMap<>();
+    SavedItemsArrayAdapter savedItemsArrayAdapter;
+
     private BroadcastReceiver broadcastSaveTrack = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Track track = (Track) intent.getSerializableExtra(BROADCAST_KEY_SAVE_TRACK);
-            if(!savedTracks.contains(track) && (savingsTrack == null || savingsTrack != null && !savingsTrack.containsKey(track))) {
-                (savingsTrack == null ? savingsTrack = new HashMap<Track, SaveTask>() : savingsTrack).put(track, new SaveTask(track));
+            if(savedTracks.contains(track) || savingsTrack.containsKey(track)) {
+                Log.d(getClass().getName(), "Track has already been saved");
+            } else {
+                savingsTrack.put(track, new SaveTask(track, savedTracks, savingsTrack));
                 savedItemsArrayAdapter.add(track);
                 savedItemsArrayAdapter.notifyDataSetChanged();
-            } else {
-                Log.d(getClass().getName(), "Track has already been saved");
             }
         }
     };
@@ -48,21 +54,16 @@ public class SaverFragment extends Fragment {
         View v = inflater.inflate(R.layout.main_saver_fragment, container, false);
 //        saverFragment = this;
 
-        if(savedItemsArrayAdapter == null) {
-            savedItemsArrayAdapter = new SavedItemsArrayAdapter(getActivity());
-            savedTracks = TrackService.read();
-            savedItemsArrayAdapter.addAll(savedTracks);
-        }
+        savedItemsArrayAdapter = new SavedItemsArrayAdapter(getActivity(), savingsTrack);
+        savedItemsArrayAdapter.addAll(savedTracks);
 
 
         ((ListView) v.findViewById(R.id.main_saver_fragment_list_view))
                 .setAdapter(savedItemsArrayAdapter);
 
-        if(onPlayerAddItemClickListener == null) {
-            onPlayerAddItemClickListener = new OnPlayerAddItemClickListener();
-        }
+
         ((ListView) v.findViewById(R.id.main_saver_fragment_list_view))
-                .setOnItemClickListener(onPlayerAddItemClickListener);
+                .setOnItemClickListener(new OnPlayerAddItemClickListener());
 
         return v;
     }

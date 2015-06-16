@@ -16,14 +16,17 @@ import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class FindTracksTask extends AsyncTask<Void, Void, List<Track>> {
 
-    private String searchText;
-    private ProgressBar forSearchProgressBar;
-    private ArrayAdapter<Track> searchedItemsArrayAdapter;
+    private final String searchText;
+    private final ProgressBar forSearchProgressBar;
+    private final ArrayAdapter<Track> searchedItemsArrayAdapter;
+    private final List<Track> foundTracks;
 
-    public FindTracksTask(String searchText, ProgressBar forSearchProgressBar, ArrayAdapter<Track> searchedItemsArrayAdapter) {
+    public FindTracksTask(final String searchText, final ProgressBar forSearchProgressBar,
+                          final ArrayAdapter<Track> searchedItemsArrayAdapter, final List<Track> foundTracks) {
         this.searchText = searchText;
         this.forSearchProgressBar = forSearchProgressBar;
         this.searchedItemsArrayAdapter = searchedItemsArrayAdapter;
+        this.foundTracks = foundTracks;
         this.executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 
@@ -45,12 +48,13 @@ public class FindTracksTask extends AsyncTask<Void, Void, List<Track>> {
         Log.i(getClass().getName(), "Tracks: " + list);
         forSearchProgressBar.setVisibility(View.GONE);
         if (list != null) {
-            foundTracks = list;
+            foundTracks.clear();
+            foundTracks.addAll(list);
+            searchedItemsArrayAdapter.clear();
             searchedItemsArrayAdapter.addAll(list);
             searchedItemsArrayAdapter.notifyDataSetChanged();
         } else {
             Toast.makeText(ApplicationContext.instance, "No result", Toast.LENGTH_SHORT).show();
         }
-        findTracksTask = null;
     }
 }

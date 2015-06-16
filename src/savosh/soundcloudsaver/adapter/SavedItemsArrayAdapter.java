@@ -10,13 +10,20 @@ import com.squareup.picasso.Picasso;
 import savosh.soundcloudsaver.ApplicationContext;
 import savosh.soundcloudsaver.R;
 import savosh.soundcloudsaver.model.Track;
+import savosh.soundcloudsaver.task.SaveTask;
+
+import java.util.List;
+import java.util.Map;
 
 import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SavedItemsArrayAdapter extends ArrayAdapter<Track> {
 
-    public SavedItemsArrayAdapter(Context context) {
+    final Map<Track, SaveTask> savingsTrack;
+
+    public SavedItemsArrayAdapter(Context context, final Map<Track, SaveTask> savingsTrack) {
         super(context, 0);
+        this.savingsTrack = savingsTrack;
     }
 
     private class ViewHolder {
@@ -45,7 +52,7 @@ public class SavedItemsArrayAdapter extends ArrayAdapter<Track> {
         final ViewHolder viewHolder = (ViewHolder) row.getTag();
         final Track track = getItem(position);
 
-        if(savingsTrack != null && savingsTrack.containsKey(track)){
+        if(savingsTrack.containsKey(track)){
             savingsTrack.get(track).setProgressBar(viewHolder.progress);
         } else {
             viewHolder.progress.setVisibility(View.GONE);
