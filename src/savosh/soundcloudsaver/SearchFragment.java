@@ -9,39 +9,47 @@ import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
-import savosh.soundcloudsaver.adapter.SearchedItemsArrayAdapter;
+import savosh.soundcloudsaver.adapter.UniversalItemsArrayAdapter;
 import savosh.soundcloudsaver.listener.OnPlayerAddItemClickListener;
 import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.task.FindTracksTask;
 
-
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
-import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SearchFragment extends Fragment {
     public static final String TAG = SearchFragment.class.getName();
-
+    private static final String KEY_SAVED_FOUND_TRACKS = "foundTracks";
     final List<Track> foundTracks = new ArrayList<>();
-    FindTracksTask findTracksTask;
+    static FindTracksTask findTracksTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         Log.i(getClass().getName(), "onCreateView");
+
+        if(savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_FOUND_TRACKS)){
+            if(savedInstanceState.get(KEY_SAVED_FOUND_TRACKS) instanceof Collection) {
+                foundTracks.addAll((Collection) savedInstanceState.get(KEY_SAVED_FOUND_TRACKS));
+            }
+        }
+
         View v = inflater.inflate(R.layout.main_search_fragment, container, false);
 
         ListView listView = (ListView) v.findViewById(R.id.main_search_fragment_list_view);
         EditText editText = (EditText) v.findViewById(R.id.main_search_fragment_edit_text);
 
-//        searchFragment = this;
-
-        final SearchedItemsArrayAdapter searchedItemsArrayAdapter = new SearchedItemsArrayAdapter(getActivity());
-        searchedItemsArrayAdapter.addAll(foundTracks);
-        listView.setAdapter(searchedItemsArrayAdapter);
-
-
+        final UniversalItemsArrayAdapter universalItemsArrayAdapter = new UniversalItemsArrayAdapter(getActivity(),
+                UniversalItemsArrayAdapter.MODE_FOR_SEARCH_RESULT, null);
+        universalItemsArrayAdapter.addAll(foundTracks);
+        listView.setAdapter(universalItemsArrayAdapter);
         final ProgressBar forSearchProgressBar = (ProgressBar) v.findViewById(R.id.main_search_fragment_progress_bar);
+
+        if(findTracksTask != null){
+            findTracksTask.link(new FindTracksTask.Links(forSearchProgressBar, universalItemsArrayAdapter, foundTracks));
+        }
+
         showKeyboard(editText);
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(final View v, int keyCode, KeyEvent event) {
@@ -50,7 +58,7 @@ public class SearchFragment extends Fragment {
                         if(findTracksTask == null || findTracksTask.getStatus() == AsyncTask.Status.FINISHED){
                             hideKeyboard(v);
                             findTracksTask = new FindTracksTask(((EditText) v).getText().toString(),
-                                    forSearchProgressBar, searchedItemsArrayAdapter, foundTracks);
+                                    forSearchProgressBar, universalItemsArrayAdapter, foundTracks);
                         }
                     }
                     return true;
@@ -58,19 +66,6 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
-
-
-//        if (currentTrack != null) {
-//            Intent intent = new Intent(MainActivity.BROADCAST_SET_CURRENT_TRACK_TITLE);
-//            intent.putExtra(MainActivity.BROADCAST_KEY_TITLE, currentTrack.getTitle());
-//            getActivity().sendBroadcast(intent);
-//        }
-//
-//        if (nextTrack != null) {
-//            Intent intent = new Intent(MainActivity.BROADCAST_SET_NEXT_TRACK_TITLE);
-//            intent.putExtra(MainActivity.BROADCAST_KEY_TITLE, nextTrack.getTitle());
-//            getActivity().sendBroadcast(intent);
-//        }
 
         listView.setOnItemClickListener(new OnPlayerAddItemClickListener());
 
@@ -89,6 +84,13 @@ public class SearchFragment extends Fragment {
         if (manager != null) {
             manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(getClass().getName(), "onSaveInstanceState");
+        outState.putSerializable(KEY_SAVED_FOUND_TRACKS, (Serializable) foundTracks);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -118,6 +120,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onDestroyView() {
         Log.i(getClass().getName(), "onDestroyView");
+        findTracksTask.unlink();
         super.onDestroyView();
     }
 

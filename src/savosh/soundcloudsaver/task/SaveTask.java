@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import savosh.soundcloudsaver.ApplicationContext;
 import savosh.soundcloudsaver.model.Track;
 
 import java.io.BufferedInputStream;
@@ -16,7 +17,6 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
-import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class SaveTask extends AsyncTask<Track, Integer, Track> {
     private static final int MAX_PROGRESS = 100;
@@ -78,6 +78,7 @@ public class SaveTask extends AsyncTask<Track, Integer, Track> {
     protected void onPostExecute(Track track) {
         if(progressBar != null){
             progressBar.setVisibility(View.GONE);
+            progressBar = null;
         }
         savingsTrack.remove(track);
         if(!savedTracks.contains(track)) {

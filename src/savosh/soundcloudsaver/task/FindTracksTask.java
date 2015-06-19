@@ -12,49 +12,66 @@ import savosh.soundcloudsaver.service.TrackService;
 
 import java.util.List;
 
-import static savosh.soundcloudsaver.ObjectsLocator.*;
 
-public class FindTracksTask extends AsyncTask<Void, Void, List<Track>> {
+public class FindTracksTask extends AsyncTask<String, Void, List<Track>> {
 
-    private final String searchText;
-    private final ProgressBar forSearchProgressBar;
-    private final ArrayAdapter<Track> searchedItemsArrayAdapter;
-    private final List<Track> foundTracks;
+    public static class Links {
+        public final ProgressBar forSearchProgressBar;
+        public final ArrayAdapter<Track> searchedItemsArrayAdapter;
+        public final List<Track> foundTracks;
+
+        public Links(ProgressBar forSearchProgressBar, ArrayAdapter<Track> searchedItemsArrayAdapter,
+                     List<Track> foundTracks) {
+            this.forSearchProgressBar = forSearchProgressBar;
+            this.searchedItemsArrayAdapter = searchedItemsArrayAdapter;
+            this.foundTracks = foundTracks;
+        }
+    }
+
+    private Links links;
 
     public FindTracksTask(final String searchText, final ProgressBar forSearchProgressBar,
                           final ArrayAdapter<Track> searchedItemsArrayAdapter, final List<Track> foundTracks) {
-        this.searchText = searchText;
-        this.forSearchProgressBar = forSearchProgressBar;
-        this.searchedItemsArrayAdapter = searchedItemsArrayAdapter;
-        this.foundTracks = foundTracks;
-        this.executeOnExecutor(THREAD_POOL_EXECUTOR);
+        links = new Links(forSearchProgressBar, searchedItemsArrayAdapter, foundTracks);
+        this.executeOnExecutor(THREAD_POOL_EXECUTOR, searchText);
+    }
+
+    public void unlink(){
+        links = null;
+    }
+
+    public void link(Links links){
+        this.links = links;
     }
 
     @Override
     protected void onPreExecute() {
-        searchedItemsArrayAdapter.clear();
-        searchedItemsArrayAdapter.notifyDataSetChanged();
-        forSearchProgressBar.setVisibility(View.VISIBLE);
-        Toast.makeText(ApplicationContext.instance, "Search text: " + searchText, Toast.LENGTH_SHORT).show();
+        if(links != null) {
+            links.searchedItemsArrayAdapter.clear();
+            links.searchedItemsArrayAdapter.notifyDataSetChanged();
+            links.forSearchProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    protected List<Track> doInBackground(Void... params) {
-        return TrackService.find(searchText);
+    protected List<Track> doInBackground(String... params) {
+        return TrackService.find(params[0]);
     }
 
     @Override
     protected void onPostExecute(List<Track> list) {
         Log.i(getClass().getName(), "Tracks: " + list);
-        forSearchProgressBar.setVisibility(View.GONE);
-        if (list != null) {
-            foundTracks.clear();
-            foundTracks.addAll(list);
-            searchedItemsArrayAdapter.clear();
-            searchedItemsArrayAdapter.addAll(list);
-            searchedItemsArrayAdapter.notifyDataSetChanged();
-        } else {
-            Toast.makeText(ApplicationContext.instance, "No result", Toast.LENGTH_SHORT).show();
+        if(links != null) {
+            links.forSearchProgressBar.setVisibility(View.GONE);
+            if (list != null) {
+                links.foundTracks.clear();
+                links.foundTracks.addAll(list);
+                links.searchedItemsArrayAdapter.clear();
+                links.searchedItemsArrayAdapter.addAll(list);
+                links.searchedItemsArrayAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(ApplicationContext.instance, "No result", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

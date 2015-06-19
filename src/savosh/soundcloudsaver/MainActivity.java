@@ -15,26 +15,26 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 import savosh.soundcloudsaver.listener.OnPlayerButtonClickListener;
 
-import static savosh.soundcloudsaver.ObjectsLocator.*;
 
 public class MainActivity extends FragmentActivity {
 
-    public static final String BROADCAST_UPDATE_PROGRESS = "savosh.soundcloudsaver.MainActivity.UpdateProgress";
-    public static final String BROADCAST_SET_CURRENT_TRACK_TITLE = "savosh.soundcloudsaver.MainActivity.SetCurrentTrackTitle";
-    public static final String BROADCAST_SET_NEXT_TRACK_TITLE = "savosh.soundcloudsaver.MainActivity.SetNextTrackTitle";
+    public static final String BROADCAST_NAME = "savosh.soundcloudsaver.MainActivity";
+    private BroadcastReceiver broadcastReceiver;
 
     public static final String BROADCAST_KEY_PLAYER_PROGRESS = "PlayerProgress";
     public static final String BROADCAST_KEY_MAX_PLAYER_PROGRESS = "MaxPlayerProgress";
     public static final String BROADCAST_KEY_PLAYER_TIME_PROGRESS = "PlayerTimeProgress";
     public static final String BROADCAST_KEY_TITLE = "Title";
-    public static final String BROADCAST_KEY_VISIBLE = "Visible";
+    public static final String BROADCAST_KEY_TITLE_NEXT = "TitleNext";
 
-    public BroadcastReceiver broadcastReceiverUpdateProgress;
-    public BroadcastReceiver broadcastReceiverSetCurrentTrackTitle;
-    public BroadcastReceiver broadcastReceiverSetNextTrackTitle;
+    private FragmentTabHost fragmentTabHost;
+    public FragmentTabHost getFragmentTabHost() {
+        return fragmentTabHost;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((ApplicationContext) getApplicationContext()).setMainActivity(this);
         Log.d(getClass().getName(), "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
@@ -49,44 +49,40 @@ public class MainActivity extends FragmentActivity {
         final TextView currentTrackTitle = (TextView) findViewById(R.id.main_activity_title);
         final TextView nextTrackTitle = (TextView) findViewById(R.id.main_activity_next);
 
-        broadcastReceiverUpdateProgress = new BroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                playerProgressBar.setMax(intent.getIntExtra(BROADCAST_KEY_MAX_PLAYER_PROGRESS, 100));
-                playerProgressBar.setProgress(intent.getIntExtra(BROADCAST_KEY_PLAYER_PROGRESS, 0));
-                timeProgress.setText(intent.getStringExtra(BROADCAST_KEY_PLAYER_TIME_PROGRESS));
-            }
-        };
 
-        broadcastReceiverSetCurrentTrackTitle = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.i(getClass().getName(), "intent.getStringExtra(BROADCAST_KEY_TITLE): " + intent.getStringExtra(BROADCAST_KEY_TITLE));
-                currentTrackTitle.setText(intent.getStringExtra(BROADCAST_KEY_TITLE));
-            }
-        };
-
-        broadcastReceiverSetNextTrackTitle = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                nextTrackTitle.setText(intent.getStringExtra(BROADCAST_KEY_TITLE));
-                if(intent.getBooleanExtra(BROADCAST_KEY_VISIBLE, true)){
-                    nextTrackTitle.setVisibility(View.VISIBLE);
-                } else {
+                if(intent.hasExtra(BROADCAST_KEY_MAX_PLAYER_PROGRESS)){
+                    playerProgressBar.setMax(intent.getIntExtra(BROADCAST_KEY_MAX_PLAYER_PROGRESS, 100));
+                }
+                if(intent.hasExtra(BROADCAST_KEY_PLAYER_PROGRESS)){
+                    playerProgressBar.setProgress(intent.getIntExtra(BROADCAST_KEY_PLAYER_PROGRESS, 0));
+                }
+                if(intent.hasExtra(BROADCAST_KEY_PLAYER_TIME_PROGRESS)){
+                    timeProgress.setText(intent.getStringExtra(BROADCAST_KEY_PLAYER_TIME_PROGRESS));
+                }
+                if(intent.hasExtra(BROADCAST_KEY_TITLE)) {
+                    currentTrackTitle.setText(intent.getStringExtra(BROADCAST_KEY_TITLE));
                     nextTrackTitle.setVisibility(View.GONE);
+                }
+
+                if(intent.hasExtra(BROADCAST_KEY_TITLE_NEXT)) {
+                    nextTrackTitle.setText(intent.getStringExtra(BROADCAST_KEY_TITLE_NEXT));
+                    nextTrackTitle.setVisibility(View.VISIBLE);
                 }
             }
         };
 
-        FragmentTabHost mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
-        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
+        fragmentTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
+        fragmentTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
-        mTabHost.addTab(mTabHost.newTabSpec(SearchFragment.TAG).setIndicator("Search"),
+        fragmentTabHost.addTab(fragmentTabHost.newTabSpec(SearchFragment.TAG).setIndicator("Search"),
                 SearchFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec(SaverFragment.TAG).setIndicator("Save"),
+        fragmentTabHost.addTab(fragmentTabHost.newTabSpec(SaverFragment.TAG).setIndicator("Save"),
                 SaverFragment.class, null);
 
-        setTabsBackground(mTabHost);
+        setTabsBackground(fragmentTabHost);
     }
 
     private void setTabsBackground(TabHost tabhost) {
@@ -107,38 +103,32 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         Log.d(getClass().getName(), "onResume");
         super.onResume();
-        registerReceiver(broadcastReceiverUpdateProgress, new IntentFilter(BROADCAST_UPDATE_PROGRESS));
-        registerReceiver(broadcastReceiverSetCurrentTrackTitle, new IntentFilter(BROADCAST_SET_CURRENT_TRACK_TITLE));
-        registerReceiver(broadcastReceiverSetNextTrackTitle, new IntentFilter(BROADCAST_SET_NEXT_TRACK_TITLE));
+        registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_NAME));
     }
 
     @Override
     protected void onPause() {
         Log.d(getClass().getName(), "onPause");
         super.onPause();
-        unregisterReceiver(broadcastReceiverUpdateProgress);
-        unregisterReceiver(broadcastReceiverSetCurrentTrackTitle);
-        unregisterReceiver(broadcastReceiverSetNextTrackTitle);
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
     protected void onDestroy() {
+        ((ApplicationContext) getApplicationContext()).removeLinkToMainActivity();
         Log.d(getClass().getName(), "onDestroy");
         super.onDestroy();
-        destroy();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.d(getClass().getName(), "onSaveInstanceState");
-        isRotateScreenEvent = true;
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         Log.d(getClass().getName(), "onRestoreInstanceState");
-        isRotateScreenEvent = false;
         super.onRestoreInstanceState(savedInstanceState);
     }
 }

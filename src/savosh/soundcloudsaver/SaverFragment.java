@@ -1,10 +1,6 @@
 package savosh.soundcloudsaver;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,54 +8,45 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import savosh.soundcloudsaver.adapter.SavedItemsArrayAdapter;
+import savosh.soundcloudsaver.adapter.UniversalItemsArrayAdapter;
 import savosh.soundcloudsaver.listener.OnPlayerAddItemClickListener;
 import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.service.TrackService;
 import savosh.soundcloudsaver.task.SaveTask;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static savosh.soundcloudsaver.ObjectsLocator.*;
-
 public class SaverFragment extends Fragment {
     public static final String TAG = SaverFragment.class.getName();
 
-    public static final String BROADCAST_SAVE_TRACK = "savosh.soundcloudsaver.SaverFragment.saveTrack";
-    public static final String BROADCAST_KEY_SAVE_TRACK = "trackForSave";
-    final List<Track> savedTracks = TrackService.readSaved();
-    final Map<Track, SaveTask> savingsTrack = new HashMap<>();
-    SavedItemsArrayAdapter savedItemsArrayAdapter;
-
-    private BroadcastReceiver broadcastSaveTrack = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Track track = (Track) intent.getSerializableExtra(BROADCAST_KEY_SAVE_TRACK);
-            if(savedTracks.contains(track) || savingsTrack.containsKey(track)) {
-                Log.d(getClass().getName(), "Track has already been saved");
-            } else {
-                savingsTrack.put(track, new SaveTask(track, savedTracks, savingsTrack));
-                savedItemsArrayAdapter.add(track);
-                savedItemsArrayAdapter.notifyDataSetChanged();
-            }
-        }
-    };
+    final static List<Track> savedTracks = TrackService.readSaved();
+    final static Map<Track, SaveTask> savingsTrack = new HashMap<>();
+    UniversalItemsArrayAdapter universalItemsArrayAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(getClass().getName(), "onCreateView");
         View v = inflater.inflate(R.layout.main_saver_fragment, container, false);
-//        saverFragment = this;
 
-        savedItemsArrayAdapter = new SavedItemsArrayAdapter(getActivity(), savingsTrack);
-        savedItemsArrayAdapter.addAll(savedTracks);
+        if(!ApplicationContext.getSelf().isLinkToTrackForSaveNull()) {
+            Track track = ApplicationContext.getSelf().getTrackForSave();
+            ApplicationContext.getSelf().removeLinkToTrackForSave();
+            if (savedTracks.contains(track) || savingsTrack.containsKey(track)) {
+                Log.d(getClass().getName(), "Track has already been saved");
+            } else {
+                savingsTrack.put(track, new SaveTask(track, savedTracks, savingsTrack));
+            }
+        }
+
+        universalItemsArrayAdapter = new UniversalItemsArrayAdapter(getActivity(), UniversalItemsArrayAdapter.MODE_FOR_SAVE_RESULT, savingsTrack);
+        universalItemsArrayAdapter.addAll(savingsTrack.keySet());
+        universalItemsArrayAdapter.addAll(savedTracks);
 
 
         ((ListView) v.findViewById(R.id.main_saver_fragment_list_view))
-                .setAdapter(savedItemsArrayAdapter);
+                .setAdapter(universalItemsArrayAdapter);
 
 
         ((ListView) v.findViewById(R.id.main_saver_fragment_list_view))
@@ -96,7 +83,6 @@ public class SaverFragment extends Fragment {
     public void onResume() {
         Log.d(getClass().getName(), "onResume");
         super.onResume();
-        getActivity().registerReceiver(broadcastSaveTrack, new IntentFilter(BROADCAST_SAVE_TRACK));
     }
 
     @Override
@@ -109,8 +95,6 @@ public class SaverFragment extends Fragment {
     public void onPause() {
         Log.d(getClass().getName(), "onPause");
         super.onPause();
-        getActivity().unregisterReceiver(broadcastSaveTrack);
-
     }
 
     @Override
