@@ -10,6 +10,7 @@ import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import savosh.soundcloudsaver.adapter.UniversalItemsArrayAdapter;
+import savosh.soundcloudsaver.cache.DiskCache;
 import savosh.soundcloudsaver.listener.OnPlayerAddItemClickListener;
 import savosh.soundcloudsaver.model.Track;
 import savosh.soundcloudsaver.task.FindTracksTask;
@@ -32,6 +33,13 @@ public class SearchFragment extends Fragment {
         if(savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_FOUND_TRACKS)){
             if(savedInstanceState.get(KEY_SAVED_FOUND_TRACKS) instanceof Collection) {
                 foundTracks.addAll((Collection) savedInstanceState.get(KEY_SAVED_FOUND_TRACKS));
+            }
+        }
+
+        if(foundTracks == null || foundTracks.isEmpty()){
+            Collection collection = (Collection) DiskCache.get(KEY_SAVED_FOUND_TRACKS);
+            if(collection != null && !collection.isEmpty()) {
+                foundTracks.addAll((Collection) DiskCache.get(KEY_SAVED_FOUND_TRACKS));
             }
         }
 
@@ -120,7 +128,12 @@ public class SearchFragment extends Fragment {
     @Override
     public void onDestroyView() {
         Log.i(getClass().getName(), "onDestroyView");
-        findTracksTask.unlink();
+        if(foundTracks != null && !foundTracks.isEmpty()){
+            DiskCache.put(KEY_SAVED_FOUND_TRACKS, new ArrayList<>(foundTracks));
+        }
+        if(findTracksTask != null) {
+            findTracksTask.unlink();
+        }
         super.onDestroyView();
     }
 

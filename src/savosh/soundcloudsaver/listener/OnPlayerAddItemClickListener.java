@@ -19,6 +19,5 @@ public class OnPlayerAddItemClickListener implements AdapterView.OnItemClickList
         Intent intent = new Intent(ApplicationContext.instance, PlayerService.class);
         intent.putExtra(PlayerService.INTENT_KEY_ADD_TRACK, track);
         ApplicationContext.instance.startService(intent);
-
     }
 }
